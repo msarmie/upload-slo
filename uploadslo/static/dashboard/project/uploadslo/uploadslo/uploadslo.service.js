@@ -162,7 +162,7 @@
           );
 
           // Call to create manifest
-          mySwiftAPI.createUploadManifest(
+          extendedSwiftAPI.createUploadManifest(
             model.container.name,
             model.fullPath(uploadInfo.name),
             uploadInfo.upload_file

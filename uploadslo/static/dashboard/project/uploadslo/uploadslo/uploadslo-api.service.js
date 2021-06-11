@@ -51,6 +51,7 @@
         folder_path = folder + '/';
       }
       for (const file of files) {
+        console.log(file);
         let file_name = file.name;
         if (file.webkitRelativePath != "") {
           file_name = file.webkitRelativePath;
@@ -66,6 +67,8 @@
             toastService.add('error', gettext('Unable to upload object: ') + file_name);
           },
           function progress(e) {
+            console.log("file_name: " + file_name + " uploaded: " + e.loaded + " progress: " + Math.round(e.loaded / file.size * 100));
+            console.log(e);
             onProgress(e.loaded);
           }
         );
