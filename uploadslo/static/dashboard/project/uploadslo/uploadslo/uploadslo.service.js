@@ -9,14 +9,14 @@
 
   angular
     .module('horizon.dashboard.project.containers')
-    .factory('horizon.dashboard.project.containers.objects-batch-actions.upload', uploadService)
+    .factory('horizon.dashboard.project.containers.upload-multiple', uploadMultipleService)
     .factory('horizon.dashboard.project.containers.upload-slo', uploadSloService) // needs to be in the same module
     .run(registerActions);
 
   registerActions.$inject = [
     'horizon.framework.conf.resource-type-registry.service',
     'horizon.dashboard.project.containers.object.resourceType',
-    'horizon.dashboard.project.containers.objects-batch-actions.upload',
+    'horizon.dashboard.project.containers.upload-multiple',
     'horizon.dashboard.project.containers.upload-slo'
   ];
 
@@ -27,17 +27,22 @@
   function registerActions(
     registryService,
     objectResCode,
-    uploadService,
+    uploadMultipleService,
     uploadSloService
   ) {
     registryService.getResourceType(objectResCode).batchActions
     .append({
+      service: uploadMultipleService,
+      template: {text: '<span class="fa fa-upload"></span>' + gettext('Multiple')}
+    })
+    .append({
       service: uploadSloService,
-      template: {text: '<span class="fa fa-upload"></span>' + gettext('Large Upload')}
+      template: {text: '<span class="fa fa-upload"></span>' + gettext('Large Object')}
     });
   }
 
-  function uploadModal(html, $uibModal) {
+  function uploadMultipleModal(html, $uibModal) {
+    console.log("Upload Modal");
     var localSpec = {
       backdrop: 'static',
       controller: 'horizon.dashboard.project.uploadslo.uploadslo.UploadMultipleModalController as ctrl',
@@ -46,7 +51,7 @@
     return $uibModal.open(localSpec).result;
   }
 
-  uploadService.$inject = [
+  uploadMultipleService.$inject = [
     '$rootScope',
     'horizon.app.core.openstack-service-api.swift',
     'horizon.dashboard.project.uploadslo.uploadslo.uploadslo-api',
@@ -60,25 +65,24 @@
     '$uibModal'
   ];
 
-  function uploadService($rootScope, swiftAPI, extendedSwiftAPI, events, basePath, myBasePath, model, $qExtensions, modalWaitSpinnerService,
+  function uploadMultipleService($rootScope, swiftAPI, extendedSwiftAPI, events, basePath, myBasePath, model, $qExtensions, modalWaitSpinnerService,
                          toastService, $uibModal) {
     var service = {
       allowed: function allowed() {
         return $qExtensions.booleanAsPromise(true);
       },
       perform: function perform() {
-        uploadModal(myBasePath + 'upload-object-modal.html', $uibModal)
-          .then(service.uploadObjectCallback);
+        uploadMultipleModal(myBasePath + 'upload-object-modal.html', $uibModal)
+          .then(service.uploadMultipleObjectCallback);
       },
-      uploadObjectCallback: uploadObjectCallback
+      uploadMultipleObjectCallback: uploadMultipleObjectCallback
     };
     return service;
 
-    function uploadObjectCallback(uploadInfo) {
+    function uploadMultipleObjectCallback(uploadInfo) {
       function onProgress(progress) {
         $rootScope.$broadcast(events.FILE_UPLOAD_PROGRESS, progress);
       }
-      modalWaitSpinnerService.showModalSpinner(gettext("Uploading"));
       extendedSwiftAPI.uploadObject(
         model.container.name,
         uploadInfo.file_names,
@@ -86,7 +90,6 @@
         model.folder,
         onProgress
       ).then(function success() {
-        modalWaitSpinnerService.hideModalSpinner();
         toastService.add(
           'success',
           interpolate(gettext('File %(name)s uploaded.'), uploadInfo, true)
@@ -97,7 +100,7 @@
           model.folder
         );
       }, function error() {
-        modalWaitSpinnerService.hideModalSpinner();
+          console.log("upload-error");
       });
 
     }
