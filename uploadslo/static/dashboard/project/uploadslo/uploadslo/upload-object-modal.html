@@ -3,7 +3,7 @@
     <span aria-hidden="true" class="fa fa-times"></span>
   </button>
   <div class="h3 modal-title">
-    <translate>Upload File(s) To: {$ ctrl.model.container.name $}</translate>
+    <translate>Upload Multiple File(s) To: {$ ctrl.model.container.name $}</translate>
     <span ng-if="ctrl.model.folder">: {$ ctrl.model.folder $}</span>
   </div>
 </div>
@@ -13,20 +13,21 @@
     <div class="row">
       <div class="col-sm-6">
         <fieldset>
-          <div class="form-group ">
-            <label class="control-label" for="id_object_file_multiple" translate>File multiple</label>
+          <div class="form-group " ng-class="{'has-error': ctrl.form.files_multiple.$dirty && ctrl.form.files_multiple.$invalid}">
+            <label class="control-label" for="files_multiple" translate>File multiple</label>
             <span class="hz-icon-required fa fa-asterisk"></span>
             <div>
-              <input id="id_object_file_multiple" type="file" name="file" multiple required
-                     ng-model="ctrl.model.view_file" on-file-change="ctrl.changeFile">
+              <input id="files_multiple" type="file" name="files_multiple" multiple required
+                     ng-model="ctrl.model.view_file" on-multiple-file-change="ctrl.changeFile">
             </div>
+<!--            <span on-upload-progress></span>-->
           </div>
-          <div class="form-group ">
-            <label class="control-label" for="id_object_file_directory" translate>Directory</label>
+          <div class="form-group " ng-class="{'has-error': ctrl.form.files_directory.$dirty && ctrl.form.files_directory.$invalid}">
+            <label class="control-label" for="files_directory" translate>Directory</label>
             <span class="hz-icon-required fa fa-asterisk"></span>
             <div>
-              <input id="id_object_file_directory" type="file" name="file" multiple directory webkitdirectory
-                     ng-model="ctrl.model.view_file" on-file-change="ctrl.changeFile">
+              <input id="files_directory" type="file" name="files_directory" multiple directory webkitdirectory
+                     ng-model="ctrl.model.view_file" on-multiple-file-change="ctrl.changeFile">
             </div>
           </div>
         </fieldset>
@@ -59,7 +60,7 @@
               <div class="form-group col-md-4">
                 <span type="text" class="form-control">{$ item.size $} bytes</span>
               </div>
-              <div class="col-md-2">
+              <div class="form-group col-md-2">
                 <button type="button" class="btn btn-primary mb-2" ng-click="ctrl.removeFile(item)">Remove</button>
               </div>
             </div>
@@ -70,17 +71,17 @@
   </div>
 
   <div class="modal-footer">
-<!--    <uib-progressbar value="ctrl.uploadProgress"></uib-progressbar>-->
-<!--    <span class="progress-bar-text">{$ ctrl.uploadProgress $}%</span>-->
-    <span>Total size: {$ ctrl.totalUploadProgress $} / {$ ctrl.model.counted.size $} No. of Files: {$ ctrl.model.counted.total $}</span>
+    <uib-progressbar value="ctrl.totalUploadProgress"></uib-progressbar>
+    <span class="progress-bar-text">{$ ctrl.totalUploadProgress $}%</span>
+    <span>Total size: {$ ctrl.totalUploadProgress $} No. of Files: {$ ctrl.model.counted.total $}</span>
     <button class="btn btn-default" ng-click="$dismiss()">
       <span class="fa fa-close"></span>
       <translate>Cancel</translate>
     </button>
-    <button class="btn btn-primary" ng-click="$close(ctrl.model)"
+    <button type="button" class="btn btn-primary" ng-click="ctrl.startUpload(ctrl.model)"
            ng-disabled="ctrl.form.$invalid">
           <span class="fa fa-upload"></span>
-      <translate>Upload File</translate>
+      <translate>Start Upload</translate>
     </button>
   </div>
 </div>

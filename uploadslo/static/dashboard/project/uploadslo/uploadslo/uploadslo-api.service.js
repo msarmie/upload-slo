@@ -51,7 +51,6 @@
         folder_path = folder + '/';
       }
       for (const file of files) {
-        console.log(file);
         let file_name = file.name;
         if (file.webkitRelativePath != "") {
           file_name = file.webkitRelativePath;
@@ -65,11 +64,10 @@
           },
           function error(err) {
             toastService.add('error', gettext('Unable to upload object: ') + file_name);
+            return err;
           },
           function progress(e) {
-            console.log("file_name: " + file_name + " uploaded: " + e.loaded + " progress: " + Math.round(e.loaded / file.size * 100));
-            console.log(e);
-            onProgress(e.loaded);
+            onProgress(e);
           }
         );
       }
@@ -78,11 +76,12 @@
     function uploadSlo(container, objectName, file) {
       var segmentContainer = container + "_segments";
       var segmentPseudoFolderName = objectName;
+      // must create pseudo-folder
 
       return service.getNextSegmentNumberDirect(segmentContainer, segmentPseudoFolderName)
       .then(
         function(result) {
-          console.log("getNextSegmentNumberDirect: " +result);
+          // console.log("getNextSegmentNumberDirect: " +result);
           return result;
         }
       )
@@ -108,7 +107,7 @@
 
             }
             segmentNumber++;
-            segmentStart = (segmentNumber -1) * segmentSize;
+            segmentStart = (segmentNumber - 1) * segmentSize;
             segmentEnd = segmentNumber * segmentSize;
           }
         }
@@ -128,7 +127,7 @@
       return apiService.get(swiftAPI.getContainerURL(container) + '/metadata/')
       .then(
         function(success) {
-          console.log("Creating container...");
+          // console.log("Creating container...");
       }, function error() {
         apiService.post(swiftAPI.getContainerURL(container) + '/metadata/', data)
         .error(function (response) {
@@ -140,18 +139,14 @@
         })
       }).then(function success() {
         var params = {"path": folderName};
-        console.log("folderName: " + folderName);
         return swiftAPI.getObjects(container, params)
         .then(
           function(result) {
-            console.log("get objects");
-            console.log(result);
+            // console.log("get objects");
             return result.data.items;
           }
         ).then(
           function(result) {
-            console.log("chained");
-            console.log(result);
             if(result.length < 1) {
               return 1;
             }

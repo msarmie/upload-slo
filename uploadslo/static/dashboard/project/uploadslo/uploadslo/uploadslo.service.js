@@ -42,7 +42,6 @@
   }
 
   function uploadMultipleModal(html, $uibModal) {
-    console.log("Upload Modal");
     var localSpec = {
       backdrop: 'static',
       controller: 'horizon.dashboard.project.uploadslo.uploadslo.UploadMultipleModalController as ctrl',
@@ -72,8 +71,9 @@
         return $qExtensions.booleanAsPromise(true);
       },
       perform: function perform() {
-        uploadMultipleModal(myBasePath + 'upload-object-modal.html', $uibModal)
-          .then(service.uploadMultipleObjectCallback);
+//        uploadMultipleModal(myBasePath + 'upload-object-modal.html', $uibModal)
+//          .then(service.uploadMultipleObjectCallback);
+        uploadMultipleModal(myBasePath + 'upload-object-modal.html', $uibModal);
       },
       uploadMultipleObjectCallback: uploadMultipleObjectCallback
     };
@@ -146,7 +146,7 @@
     function uploadSloObjectCallback(uploadInfo) {
       // 1073741824 bytes 1GB
       // 50000000 bytes 50MB
-      if (uploadInfo.upload_file.size >= 1073741824) {
+//      if (uploadInfo.upload_file.size >= 1073741824) {
         modalWaitSpinnerService.showModalSpinner(gettext("Uploading large file"));
         // Call to upload file as SLO
         extendedSwiftAPI.uploadSlo(
@@ -193,7 +193,7 @@
           console.log("Error uploading SLO");
           modalWaitSpinnerService.hideModalSpinner();
         }
-      }
+//      }
     }
   }
 })();
